@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/solomonsitotaw23/snippetbox/cmd/middleware"
 )
 
 type application struct {
@@ -28,16 +26,9 @@ func main() {
 		infoLog:  infoLog,
 	}
 
-	mux := http.NewServeMux()
-
-	fileServer := http.FileServer(http.Dir("./ui/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static", middleware.Neuter(fileServer)))
-
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/snippet/view", app.snippetView)
-	mux.HandleFunc("/snippet/create", app.snippetCreate)
-
 	//since the http.Listen and serve uses the default logger we should change it to our custom logger
+	mux := app.routes()
+
 	srv := &http.Server{
 		Addr:     *addr,
 		ErrorLog: errorLog,
