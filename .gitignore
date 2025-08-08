@@ -2,4 +2,4 @@
 
 # Air (live reload tool) config and temp
 .air.toml
-tmp/
+/tmp/
