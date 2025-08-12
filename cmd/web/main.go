@@ -8,11 +8,13 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/solomonsitotaw23/snippetbox/internal/models"
 )
 
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
+	snippets *models.SnippetModel
 }
 
 func main() {
@@ -39,9 +41,12 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
+		snippets: &models.SnippetModel{DB: db},
 	}
 
 	//since the http.Listen and serve uses the default logger we should change it to our custom logger
+	// also initialize the models.SnippetModel Nd add it to application
+
 	mux := app.routes()
 
 	srv := &http.Server{
