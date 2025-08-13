@@ -23,30 +23,34 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, snippet := range snippets {
-		fmt.Fprintf(w, "%+v\n", snippet)
+	// for _, snippet := range snippets {
+	// 	fmt.Fprintf(w, "%+v\n", snippet)
+	// }
+
+	//a slice containing the path to the template files
+
+	files := []string{
+		"./ui/html/base.tmpl.html",
+		"./ui/html/pages/home.tmpl.html",
+		"./ui/html/partials/nav.tmpl.html",
 	}
 
-	// a slice containing the path to the template files
+	ts, err := template.ParseFiles(files...)
 
-	// files := []string{
-	// 	"./ui/html/base.tmpl.html",
-	// 	"./ui/html/pages/home.tmpl.html",
-	// 	"./ui/html/partials/nav.tmpl.html",
-	// }
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
 
-	// ts, err := template.ParseFiles(files...)
+	data := &templateData{
+		Snippets: snippets,
+	}
 
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// 	return
-	// }
+	err = ts.ExecuteTemplate(w, "base", data)
 
-	// err = ts.ExecuteTemplate(w, "base", nil)
-
-	// if err != nil {
-	// 	app.serverError(w, err)
-	// }
+	if err != nil {
+		app.serverError(w, err)
+	}
 
 }
 
