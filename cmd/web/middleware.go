@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -34,6 +35,22 @@ func secureHeaders(next http.Handler) http.Handler {
 func (app *application) logRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		app.infoLog.Printf("%s - %s %s %s", r.RemoteAddr, r.Proto, r.Method, r.URL.RequestURI())
+		next.ServeHTTP(w, r)
+	})
+}
+
+// recover panic to show the user a valid error message
+
+func (app *application) recoverPanic(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// a deferred function (this will run every time of panic as go unwinds the stack)
+		defer func() {
+			if err := recover(); err != nil {
+				w.Header().Set("Connection", "close")
+				//call the app.serverError helper to return a 500 internal server error
+				app.serverError(w, fmt.Errorf("%s", err))
+			}
+		}()
 		next.ServeHTTP(w, r)
 	})
 }
