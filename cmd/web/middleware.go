@@ -17,6 +17,7 @@ func Neuter(next http.Handler) http.Handler {
 	})
 }
 
+// ADD secure headers on every request
 func secureHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -27,4 +28,12 @@ func secureHeaders(next http.Handler) http.Handler {
 			w.Header().Set("X-XSS-Protection", "0")
 			next.ServeHTTP(w, r)
 		})
+}
+
+// ADD log every request before proceeding
+func (app *application) logRequest(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		app.infoLog.Printf("%s - %s %s %s", r.RemoteAddr, r.Proto, r.Method, r.URL.RequestURI())
+		next.ServeHTTP(w, r)
+	})
 }
