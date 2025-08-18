@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"database/sql"
 	"flag"
 	"html/template"
@@ -65,6 +66,9 @@ func main() {
 		formDecoder:    formDecoder,
 		sessionManager: sessionManager,
 	}
+	tlsConfig := &tls.Config{
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+	}
 
 	//since the http.Listen and serve uses the default logger we should change it to our custom logger
 	// also initialize the models.SnippetModel Nd add it to application
@@ -72,9 +76,10 @@ func main() {
 	mux := app.routes()
 
 	srv := &http.Server{
-		Addr:     *addr,
-		ErrorLog: errorLog,
-		Handler:  mux,
+		Addr:      *addr,
+		ErrorLog:  errorLog,
+		Handler:   mux,
+		TLSConfig: tlsConfig,
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
