@@ -80,6 +80,10 @@ func main() {
 		ErrorLog:  errorLog,
 		Handler:   mux,
 		TLSConfig: tlsConfig,
+		// Add Idle, Read and write timeouts
+		IdleTimeout:  time.Minute, //keep alive connections will be closed after 1 minute of inactivity
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
