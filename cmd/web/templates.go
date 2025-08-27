@@ -40,8 +40,8 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		name := filepath.Base(page)
 
 		patterns := []string{
-			"html/base.tmpl",
-			"html/partials/*.tmpl",
+			"html/base.tmpl.html",
+			"html/partials/*.tmpl.html",
 		}
 
 		ts, err := template.New(name).Funcs(functions).ParseFS(ui.Files, patterns...)
